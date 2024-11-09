@@ -32,6 +32,6 @@ del() {
 }
 ```
 
-# License
+## License
 
 [GLWT(Good Luck With That) Public License](https://github.com/GasinAn/recycle-bin/blob/main/LICENSE)
