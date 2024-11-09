@@ -1,5 +1,5 @@
 # recycle-bin
-Simple and Stupid Linux Bash Recycle Bin
+Simple and Stupid Bash Recycle Bin
 
 ```bash
 del() {
