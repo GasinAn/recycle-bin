@@ -13,18 +13,20 @@ del() {
         mkdir -p $newdir
         mv $1 $newdir/$newname
 
-        echo "#!/bin/bash
-
-              if [ -e $olddir/$oldname ]; then
-                  echo '$olddir/$oldname exists!'
-                  echo 'Fail to move back.'
-                  exit 1
-              fi
-
-              mkdir -p $olddir
-              mv $newdir/$newname $olddir/$oldname
-              rm $mvbksh
-              " | sed 's/^              //g' >> $mvbksh
+        mvbksh_lines=(
+            "#!/bin/bash"
+            ""
+            "if [ -e $olddir/$oldname ]; then"
+            "    echo '$olddir/$oldname exists!'"
+            "    echo 'Fail to move back.'"
+            "    exit 1"
+            "fi"
+            ""
+            "mkdir -p $olddir"
+            "mv $newdir/$newname $olddir/$oldname"
+            "rm $mvbksh"
+        )
+        printf "%s\n" "${mvbksh_lines[@]}" > $mvbksh
         chmod u+x $mvbksh
 
         shift
