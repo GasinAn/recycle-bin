@@ -16,6 +16,8 @@ del() {
         mvbksh_lines=(
             "#!/bin/bash"
             ""
+            "set -e"
+            ""
             "if [ -e $olddir/$oldname ]; then"
             "    echo '$olddir/$oldname exists!'"
             "    echo 'Fail to move back.'"
