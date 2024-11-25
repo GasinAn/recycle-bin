@@ -6,7 +6,7 @@ del() {
     while [ $# -gt 0 ]; do
         olddir=$(dirname $(realpath -s $1))
         oldname=$(basename $(realpath -s $1))
-        newdir=~/recycle_bin/$(date -I)
+        newdir=~/.recycle_bin/$(date -I)
         newname=$(date -Ins)-$oldname
         mvbksh=$newdir/.mvbk.$newname.sh
 
