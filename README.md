@@ -3,7 +3,7 @@ Simple and Stupid Linux Bash Recycle Bin
 
 ```bash
 del() {
-    while [ "$#" -eq 0 ]; do
+    while [ "$#" -gt 0 ]; do
         oldpath=$(realpath -s "$1")
         olddir=$(dirname "$oldpath")
         oldname=$(basename "$oldpath")
