@@ -3,11 +3,12 @@ Simple and Stupid Linux Bash Recycle Bin
 
 ```bash
 del() {
+    rbdir=~/.recycle_bin
     while [ "$#" -gt 0 ]; do
         oldpath=$(realpath -s "$1")
         olddir=$(dirname "$oldpath")
         oldname=$(basename "$oldpath")
-        newdir=~/.recycle_bin/$(date -I)
+        newdir=$rbdir/$(date -I)
         newname=$(date -Ins)-"$oldname"
         mvbksh=$newdir/.mvbk."$newname".sh
 
