@@ -8,12 +8,12 @@ del() {
         oldpath=$(realpath -s "$1")
         olddir=$(dirname "$oldpath")
         oldname=$(basename "$oldpath")
-        newdir=$rbdir/$(date -I)
+        newdir="$rbdir"/$(date -I)
         newname=$(date -Ins)-"$oldname"
-        mvbksh=$newdir/.mvbk."$newname".sh
+        mvbksh="$newdir"/.mvbk."$newname".sh
 
-        mkdir -p $newdir
-        mv "$1" $newdir/"$newname"
+        mkdir -p "$newdir"
+        mv "$1" "$newdir"/"$newname"
 
         mvbksh_lines=(
             "#!/bin/bash"
