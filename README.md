@@ -2,36 +2,51 @@
 Simple and Stupid Linux Bash Recycle Bin
 
 ```bash
+rbdir=~/.recycle_bin
 del() {
-    rbdir=~/.recycle_bin
     while [ "$#" -gt 0 ]; do
         oldpath=$(realpath -s "$1")
         olddir=$(dirname "$oldpath")
         oldname=$(basename "$oldpath")
         newdir="$rbdir"/$(date -I)
         newname=$(date -Ins)-"$oldname"
-        mvbksh="$newdir"/.mvbk."$newname".sh
+        newpath="$newdir"/"$newname"
+        new2old="$newdir"/.new2old."$newname"
 
         mkdir -p "$newdir"
-        mv "$1" "$newdir"/"$newname"
+        mv "$oldpath" "$newpath"
+        printf '%s' "$oldpath" > "$new2old"
 
-        mvbksh_lines=(
-            "#!/bin/bash"
-            ""
-            "set -e"
-            ""
-            "if [ -e '$olddir/$oldname' ]; then"
-            "    echo '\"$olddir/$oldname\" exists!'"
-            "    echo 'Fail to move back.'"
-            "    exit 1"
-            "fi"
-            ""
-            "mkdir -p '$olddir'"
-            "mv '$newdir/$newname' '$olddir/$oldname'"
-            "rm '$mvbksh'"
-        )
-        printf "%s\n" "${mvbksh_lines[@]}" > "$mvbksh"
-        chmod u+x "$mvbksh"
+        shift
+    done
+}
+mvbk() {
+    while [ "$#" -gt 0 ]; do
+        newpath=$(realpath -s "$1")
+        newdir=$(dirname "$newpath")
+        newname=$(basename "$newpath")
+        new2old="$newdir"/.new2old."$newname"
+
+        if [ ! -e "$new2old" ]; then
+            echo 'I suppose that' "\"$1\"" 'is not in the recycle bin!'
+            echo 'Did not move back.'
+            shift
+            continue
+        fi
+
+        oldpath=$(cat "$new2old")
+        olddir=$(dirname "$oldpath")
+
+        if [ -e "$oldpath" ]; then
+            echo "\"$oldpath\"" 'exists!'
+            echo 'Fail to move back.'
+            shift
+            continue
+        fi
+
+        mkdir -p "$olddir"
+        mv "$newpath" "$oldpath"
+        rm "$new2old"
 
         shift
     done
