@@ -5,16 +5,23 @@ Simple and Stupid Linux Bash Recycle Bin
 rbdir=~/.recycle_bin
 del() {
     while [ "$#" -gt 0 ]; do
-        oldpath=$(realpath -s "$1")
-        olddir=$(dirname "$oldpath")
-        oldname=$(basename "$oldpath")
-        newdir="$rbdir"/$(date -I)
-        newname=$(date -Ins)-"$oldname"
-        newpath="$newdir"/"$newname"
-        new2old="$newdir"/.new2old."$newname"
+        if [ ! -e "$1" ]; then
+            echo "\"$1\"" 'does not exist!'
+            echo 'Fail to delete.'
+            shift
+            continue
+        fi
 
-        mkdir -p "$newdir"
-        mv "$oldpath" "$newpath"
+        local oldpath=$(realpath -s "$1")
+        local olddir=$(dirname "$oldpath")
+        local oldname=$(basename "$oldpath")
+        local newdir="$rbdir"/$(date -I)
+        local newname=$(date -Ins)-"$oldname"
+        local newpath="$newdir"/"$newname"
+        local new2old="$newdir"/.new2old."$newname"
+
+        mkdir -p "$newdir" &&
+        mv "$oldpath" "$newpath" &&
         printf '%s' "$oldpath" > "$new2old"
 
         shift
@@ -22,30 +29,38 @@ del() {
 }
 mvbk() {
     while [ "$#" -gt 0 ]; do
-        newpath=$(realpath -s "$1")
-        newdir=$(dirname "$newpath")
-        newname=$(basename "$newpath")
-        new2old="$newdir"/.new2old."$newname"
-
-        if [ ! -e "$new2old" ]; then
-            echo 'I suppose that' "\"$1\"" 'is not in the recycle bin!'
-            echo 'Did not move back.'
-            shift
-            continue
-        fi
-
-        oldpath=$(cat "$new2old")
-        olddir=$(dirname "$oldpath")
-
-        if [ -e "$oldpath" ]; then
-            echo "\"$oldpath\"" 'exists!'
+        if [ ! -e "$1" ]; then
+            echo "\"$1\"" 'does not exist!'
             echo 'Fail to move back.'
             shift
             continue
         fi
 
-        mkdir -p "$olddir"
-        mv "$newpath" "$oldpath"
+        local newpath=$(realpath -s "$1")
+        local newdir=$(dirname "$newpath")
+        local newname=$(basename "$newpath")
+        local new2old="$newdir"/.new2old."$newname"
+
+        if [ ! -e "$new2old" ]; then
+            echo 'Cannot find the original path!'
+            echo 'Is' "\"$1\"" 'in the recycle bin?'
+            echo 'Fail to move back.'
+            shift
+            continue
+        fi
+
+        local oldpath=$(cat "$new2old")
+        local olddir=$(dirname "$oldpath")
+
+        if [ -e "$oldpath" ]; then
+            echo 'Original path' "\"$oldpath\"" 'exists!'
+            echo 'Fail to move back.'
+            shift
+            continue
+        fi
+
+        mkdir -p "$olddir" &&
+        mv "$newpath" "$oldpath" &&
         rm "$new2old"
 
         shift
