@@ -12,17 +12,18 @@ del() {
             continue
         fi
 
-        local oldpath=$(realpath -s "$1")
-        local olddir=$(dirname "$oldpath")
-        local oldname=$(basename "$oldpath")
+        local oldpath=$(realpath -s -- "$1")
+        local olddir=$(dirname -- "$oldpath")
+        local oldname=$(basename -- "$oldpath")
         local newdir="$rbdir"/$(date -I)
         local newname=$(date -Ins)-"$oldname"
         local newpath="$newdir"/"$newname"
         local new2old="$newdir"/.new2old."$newname"
 
-        mkdir -p "$newdir" &&
-        mv "$oldpath" "$newpath" &&
-        printf '%s' "$oldpath" > "$new2old"
+        mkdir -p -- "$newdir" &&
+        printf '%s' "$oldpath" > "$new2old" &&
+        chmod 444 -- "$new2old" &&
+        mv -- "$oldpath" "$newpath"
 
         shift
     done
@@ -36,9 +37,9 @@ mvbk() {
             continue
         fi
 
-        local newpath=$(realpath -s "$1")
-        local newdir=$(dirname "$newpath")
-        local newname=$(basename "$newpath")
+        local newpath=$(realpath -s -- "$1")
+        local newdir=$(dirname -- "$newpath")
+        local newname=$(basename -- "$newpath")
         local new2old="$newdir"/.new2old."$newname"
 
         if [ ! -e "$new2old" ]; then
@@ -49,8 +50,8 @@ mvbk() {
             continue
         fi
 
-        local oldpath=$(cat "$new2old")
-        local olddir=$(dirname "$oldpath")
+        local oldpath=$(cat -- "$new2old")
+        local olddir=$(dirname -- "$oldpath")
 
         if [ -e "$oldpath" ]; then
             echo 'Original path' "\"$oldpath\"" 'exists!'
@@ -59,9 +60,9 @@ mvbk() {
             continue
         fi
 
-        mkdir -p "$olddir" &&
-        mv "$newpath" "$oldpath" &&
-        rm "$new2old"
+        mkdir -p -- "$olddir" &&
+        mv -- "$newpath" "$oldpath" &&
+        rm -f -- "$new2old"
 
         shift
     done
